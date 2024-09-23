@@ -18,8 +18,10 @@ public class ConfigProperties {
     public static final int GET_MULTI = 1;
     // 下载策略-全量下载
     public static final int DOWNLOAD_ALL = 0;
-    // 下载策略-增量下载
-    public static final int DOWNLOAD_NEW = 1;
+    // 下载策略-根据created_at增量下载
+    public static final int DOWNLOAD_NEW_BY_CREATED = 1;
+    // 下载策略-根据updated_at增量下载
+    public static final int DOWNLOAD_NEW_BY_UPDATED = 2;
 
     private String address;
     private String limit;

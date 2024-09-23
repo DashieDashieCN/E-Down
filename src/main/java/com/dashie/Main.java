@@ -4,15 +4,17 @@ import com.alibaba.fastjson2.JSONObject;
 import com.dashie.client.HttpClient;
 import com.dashie.entity.ConfigProperties;
 import com.dashie.entity.FileInfo;
+import com.dashie.entity.Records;
 import com.dashie.utils.JsonUtil;
+import com.dashie.utils.TextUtil;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-import static com.dashie.entity.ConfigProperties.GET_MULTI;
-import static com.dashie.entity.ConfigProperties.GET_ONCE;
+import static com.dashie.entity.ConfigProperties.*;
 import static com.dashie.utils.ScreenPrintUtil.*;
 
 public class Main {
@@ -39,9 +41,18 @@ public class Main {
             Thread.sleep(1000);
             // 调取API并下载图片
             if (config.getStrategyOfApi() == GET_ONCE) {
+                // 单词调用
                 handleDownload(config.getAddress(), config.getLimit(), config.getTags(), config.getPage(), config.getOutputPath());
             } else if (config.getStrategyOfApi() == GET_MULTI) {
-                handleDownload(config.getAddress(), config.getLimit(), config.getTags(), config.getOutputPath());
+                // 多次调用
+                if (config.getStrategyOfDownload() == DOWNLOAD_ALL) {
+                    // 全量下载
+                    handleDownload(config.getAddress(), config.getLimit(), config.getTags(), config.getOutputPath());
+                } else if (config.getStrategyOfDownload() == DOWNLOAD_NEW_BY_CREATED || config.getStrategyOfDownload() == DOWNLOAD_NEW_BY_UPDATED) {
+                    // 增量下载
+                    Map<String, Records> records = TextUtil.readLines(TextUtil.getRecordsFilePath());   // 获取记录
+
+                }
             }
         } catch (Exception e) {
             System.out.println("ERROR: " + e);
@@ -101,6 +112,16 @@ public class Main {
             }
         }
         System.out.println(" * APPLICATION END");
+    }
+
+    public static void handleDownload(String address, String limit, String tags, String outputPath, int strategyOfDownload, Map<String, Records> records) throws IOException, InterruptedException {
+        String key = TextUtil.genKey(address, tags, strategyOfDownload);
+        Records record = records.get(key);
+        int page = 1;
+        if (record != null) {
+            page = record.getLastPage();
+        }
+        // TODO 增量下载
     }
 
     public static void printDownloadingInfo(List<FileInfo> list, int index, String outputPath) {
