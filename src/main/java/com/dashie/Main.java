@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.dashie.client.HttpClient;
 import com.dashie.entity.ConfigProperties;
 import com.dashie.entity.FileInfo;
+import com.dashie.utils.DirectoryUtil;
 import com.dashie.utils.JsonUtil;
 import com.dashie.utils.TextUtil;
 
@@ -18,16 +19,23 @@ import static com.dashie.entity.ConfigProperties.*;
 import static com.dashie.utils.ScreenPrintUtil.*;
 
 public class Main {
-    public static final String VERSION = "V0.2.3 alpha";
+    public static final String VERSION = "V0.3 beta";
 
     public static void main(String[] args) throws Exception {
         printTitle();
         int downloadedCount = 0;
+        ConfigProperties config = new ConfigProperties();
         try {
             // 获取配置文件并检查完整性
-            ConfigProperties config = new ConfigProperties();
+            config.readFromProperties();
             Thread.sleep(1000);
-
+            // 创建输出路径
+            if (config.getOutputAutoCreate() == OUTPUT_AUTO_CREATE_YES) {
+                DirectoryUtil.checkDirectory(config.getOutputPath());
+            }
+            // 创建子目录
+            String newPath = DirectoryUtil.generateDirectory(config.getOutputPath(), config.getTags(), config.getOutputAutoGenerate());
+            config.setOutputPath(newPath);
             // 调取API并下载图片
             if (config.getStrategyOfApi() == GET_ONCE) {
                 // 单词调用
@@ -44,11 +52,20 @@ public class Main {
                     downloadedCount = handleDownload(config.getAddress(), config.getLimit(), config.getTags(), config.getOutputPath(), records);
                 }
             }
+            // 自动打开输出目录
+            if (config.getOutputAutoOpen() == OUTPUT_AUTO_OPEN_YES) {
+                DirectoryUtil.open(config.getOutputPath());
+            }
         } catch (Exception e) {
             System.out.println("ERROR: \n");
             e.printStackTrace(System.err);
         }
         System.out.println(" * DOWNLOADED: " + downloadedCount);
+        // 自动退出
+        if (config.getStrategyOfExit() > EXIT_MANUAL) {
+            Thread.sleep(1000L * config.getStrategyOfExit());
+            return;
+        }
         // 程序结束
         System.out.println("程序已结束，按Enter键退出");
         Scanner scanner = new Scanner(System.in);
@@ -60,6 +77,9 @@ public class Main {
         }
     }
 
+    /**
+     * 输出标题
+     */
     public static void printTitle() {
         System.out.println("\n" +
                 "  _____            _     _      _____            _     _      \n" +
@@ -79,9 +99,19 @@ public class Main {
                 "                                                   " + VERSION);
     }
 
+    /**
+     * 单次调取API并下载文件
+     * @param address API地址
+     * @param limit API查询参数-页码大小
+     * @param tags API查询参数-标签
+     * @param page API查询参数-页码
+     * @param outputPath 文件输出路径
+     * @return 成功下载的文件数
+     * @throws Exception 异常
+     */
     public static int handleDownload(String address, String limit, String tags, String page, String outputPath) throws Exception {
         int totalCount = 0;
-        // 调取API并下载图片
+        // 调取API并下载文件
         JSONObject response = HttpClient.get(address, limit, tags, page);
         List<FileInfo> fileList = JsonUtil.jsonAnalyse(response);
         if (fileList == null || fileList.isEmpty()) return totalCount;
@@ -98,15 +128,26 @@ public class Main {
         return totalCount;
     }
 
+    /**
+     * 连续全量调取API并下载文件
+     * @param address API地址
+     * @param limit API查询参数-页码大小
+     * @param tags API查询参数-标签
+     * @param outputPath 文件输出路径
+     * @return 成功下载的文件数
+     * @throws IOException 异常
+     * @throws InterruptedException 异常
+     */
     public static int handleDownload(String address, String limit, String tags, String outputPath) throws IOException, InterruptedException {
         int totalCount = 0;
         // 调取API并下载图片
         int page = 1;
+        Long sleepMillis = null;
         while (true) {
             Date start = new Date();
             List<FileInfo> fileList;
             try {
-                JSONObject response = HttpClient.get(address, limit, tags, String.valueOf(page));
+                JSONObject response = HttpClient.get(sleepMillis, address, limit, tags, String.valueOf(page));
                 fileList = JsonUtil.jsonAnalyse(response);
                 if (fileList == null || fileList.isEmpty()) break;
             } catch (Exception e) {
@@ -120,14 +161,23 @@ public class Main {
             Date end = new Date();
             // 至少等待1秒后再调取API
             long diff = end.getTime() - start.getTime();
-            if (diff < 1000) {
-                Thread.sleep(1000 - diff);
-            }
+            sleepMillis = (diff < 1000) ? (1000 - diff) : null;
         }
         System.out.println(" * APPLICATION END");
         return totalCount;
     }
 
+    /**
+     * 连续增量调取API并下载文件
+     * @param address API地址
+     * @param limit API查询参数-页码大小
+     * @param tags API查询参数-标签
+     * @param outputPath 文件输出路径
+     * @param records 增量下载记录
+     * @return 成功下载的文件数
+     * @throws IOException 异常
+     * @throws InterruptedException 异常
+     */
     public static int handleDownload(String address, String limit, String tags, String outputPath, Map<String, Long> records) throws IOException, InterruptedException {
         int totalCount = 0;
         String key = TextUtil.genKey(address, tags);
@@ -135,12 +185,13 @@ public class Main {
         Long record = records.get(key);
         boolean noRecord = record == null;
         int page = 1;
+        Long sleepMillis = null;
         // 增量下载
         while (true) {
             Date start = new Date();
             List<FileInfo> fileList;
             try {
-                JSONObject response = HttpClient.get(address, limit, tags, String.valueOf(page));
+                JSONObject response = HttpClient.get(sleepMillis, address, limit, tags, String.valueOf(page));
                 fileList = noRecord ? JsonUtil.jsonAnalyse(response) : JsonUtil.jsonAnalyse(response, record);
                 if (fileList == null || fileList.isEmpty()) break;
                 // 预更新最新日期
@@ -158,9 +209,7 @@ public class Main {
             Date end = new Date();
             // 至少等待1秒后再调取API
             long diff = end.getTime() - start.getTime();
-            if (diff < 1000) {
-                Thread.sleep(1000 - diff);
-            }
+            sleepMillis = (diff < 1000) ? (1000 - diff) : null;
         }
         // 记录新的时间
         if (noRecord) {
@@ -174,6 +223,16 @@ public class Main {
         return totalCount;
     }
 
+    /**
+     * 连续下载文件
+     * @param page 页码
+     * @param fileList 要下载的文件列表
+     * @param index 文件列表索引
+     * @param outputPath 输出路径
+     * @param strategy 下载策略
+     * @throws IOException 异常
+     * @throws InterruptedException 异常
+     */
     public static void handleDownloadMulti(int page, List<FileInfo> fileList, int index, String outputPath, int strategy) throws IOException, InterruptedException {
         cmdCls();
         printTitle();
@@ -185,6 +244,12 @@ public class Main {
         HttpClient.download(info.getUrl(), outputPath + "/" + info.genFileName());
     }
 
+    /**
+     * 输出下载信息
+     * @param list 要下载的文件列表
+     * @param index 文件列表索引
+     * @param outputPath 输出路径
+     */
     public static void printDownloadingInfo(List<FileInfo> list, int index, String outputPath) {
         FileInfo info = list.get(index);
         System.out.println(" * NOW DOWNLOADING [" + info.getId() + "] " + info.getUrl());

@@ -1,14 +1,12 @@
 package com.dashie.utils;
 
 import com.dashie.entity.ConfigProperties;
-import com.dashie.entity.Records;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class TextUtil {
@@ -30,7 +28,7 @@ public class TextUtil {
 //        return filePath + "/resource/" + RECORDS_FILE_NAME;
 //    }
 
-    public static File checkFile(String path) throws Exception {
+    public static void checkFile(String path) throws Exception {
         System.out.println(" * CHECKING FILE...");
         File file = new File(path);
         if (!file.exists()) {
@@ -42,7 +40,6 @@ public class TextUtil {
         } else {
             System.out.println(" * FILE EXISTS: " + path);
         }
-        return file;
     }
 
     public static String readLine(String path) throws IOException {
