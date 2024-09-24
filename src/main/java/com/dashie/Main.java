@@ -4,7 +4,6 @@ import com.alibaba.fastjson2.JSONObject;
 import com.dashie.client.HttpClient;
 import com.dashie.entity.ConfigProperties;
 import com.dashie.entity.FileInfo;
-import com.dashie.entity.Records;
 import com.dashie.utils.JsonUtil;
 import com.dashie.utils.TextUtil;
 
@@ -19,7 +18,7 @@ import static com.dashie.entity.ConfigProperties.*;
 import static com.dashie.utils.ScreenPrintUtil.*;
 
 public class Main {
-    public static final String VERSION = "V0.2.2 alpha";
+    public static final String VERSION = "V0.2.3 alpha";
 
     public static void main(String[] args) throws Exception {
         printTitle();
@@ -40,6 +39,7 @@ public class Main {
                     downloadedCount = handleDownload(config.getAddress(), config.getLimit(), config.getTags(), config.getOutputPath());
                 } else if (config.getStrategyOfDownload() == DOWNLOAD_NEW) {
                     // 增量下载
+                    TextUtil.checkFile(TextUtil.getRecordsFilePath());  // 不存在记录文件时主动创建
                     Map<String, Long> records = TextUtil.readLines(TextUtil.getRecordsFilePath());   // 获取记录
                     downloadedCount = handleDownload(config.getAddress(), config.getLimit(), config.getTags(), config.getOutputPath(), records);
                 }
@@ -88,7 +88,7 @@ public class Main {
         for (int i = 0; i < fileList.size(); i++) {
             cmdCls();
             printTitle();
-            System.out.println("【模式】单次调用API");
+            System.out.println("【模式】 单次调用API");
             FileInfo info = fileList.get(i);
             printDownloadingInfo(fileList, i, outputPath);
             HttpClient.download(info.getUrl(), outputPath + "/" + info.genFileName());
@@ -165,7 +165,7 @@ public class Main {
         // 记录新的时间
         if (noRecord) {
             // 原先无相关记录时，追加更新
-            TextUtil.writeLine(TextUtil.getRecordsFilePath(), String.valueOf(records.get(key)));
+            TextUtil.writeLine(TextUtil.getRecordsFilePath(), key + TextUtil.SPLITTER + records.get(key) + "\n");
         } else {
             // 原先有相关记录时，覆写
             TextUtil.coverWriteLines(TextUtil.getRecordsFilePath(), records);
@@ -177,7 +177,7 @@ public class Main {
     public static void handleDownloadMulti(int page, List<FileInfo> fileList, int index, String outputPath, int strategy) throws IOException, InterruptedException {
         cmdCls();
         printTitle();
-        System.out.println("【模式】连续调用API / " + STRATEGY_DOWNLOAD[strategy]);
+        System.out.println("【模式】 连续调用API / " + STRATEGY_DOWNLOAD[strategy]);
         System.out.println(" * START DOWNLOADING PAGE #" + page + " ...");
         FileInfo info = fileList.get(index);
         printDownloadingInfo(fileList, index, outputPath);

@@ -14,6 +14,8 @@ import java.util.Set;
 public class TextUtil {
     public static final String RECORDS_FILE_NAME = "records.txt";
 
+    public static final String SPLITTER = " ";
+
     // jar包外
     public static String getRecordsFilePath() {
         File directory = new File("");
@@ -61,7 +63,7 @@ public class TextUtil {
 //        BufferedReader br = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(path))));
 //        String line;
 //        while ((line = br.readLine()) != null) {
-//            String[] arr = line.trim().split("-", 3);
+//            String[] arr = line.trim().split(SPLITTER, 3);
 //            if (arr.length > 1) {
 //                map.put(arr[0], new Records(Long.valueOf(arr[1]), Integer.valueOf(arr[2])));
 //            }
@@ -79,7 +81,7 @@ public class TextUtil {
 //        BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(textUtil.getClass().getResourceAsStream(getRecordsFilePath()))));
         String line;
         while ((line = br.readLine()) != null) {
-            String[] arr = line.trim().split("-", 2);
+            String[] arr = line.trim().split(SPLITTER, 2);
             if (arr.length > 1) {
                 map.put(arr[0], Long.valueOf(arr[1]));
             }
@@ -106,7 +108,7 @@ public class TextUtil {
 //        FileWriter fw = new FileWriter(path, false);
 //        Set<String> keySet = map.keySet();
 //        for (String key : keySet) {
-//            fw.write(key + "-" + map.get(key).toText() + "\n");
+//            fw.write(key + SPLITTER + map.get(key).toText() + "\n");
 //        }
 //        fw.flush();
 //        fw.close();
@@ -117,7 +119,7 @@ public class TextUtil {
         FileWriter fw = new FileWriter(path, false);
         Set<String> keySet = map.keySet();
         for (String key : keySet) {
-            fw.write(key + "-" + map.get(key) + "\n");
+            fw.write(key + SPLITTER + map.get(key) + "\n");
         }
         fw.flush();
         fw.close();
