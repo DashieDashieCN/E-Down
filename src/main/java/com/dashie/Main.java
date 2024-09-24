@@ -19,7 +19,7 @@ import static com.dashie.entity.ConfigProperties.*;
 import static com.dashie.utils.ScreenPrintUtil.*;
 
 public class Main {
-    public static final String VERSION = "V0.2.1 alpha";
+    public static final String VERSION = "V0.2.2 alpha";
 
     public static void main(String[] args) throws Exception {
         printTitle();
