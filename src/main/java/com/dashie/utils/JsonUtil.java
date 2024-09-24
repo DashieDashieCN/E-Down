@@ -14,10 +14,11 @@ public class JsonUtil {
         try {
             List<FileInfo> urlList = new ArrayList<>();
             JSONArray posts = (JSONArray) json.get("posts");
-            System.out.println(" * SIZE: " + posts.size());
             if (posts.isEmpty()) {
                 System.out.println(" * HIT BOTTOM");
+                return urlList;
             }
+            System.out.println(" * SIZE: " + posts.size());
             System.out.println(" * Getting URL...");
             for (Object object : posts) {
                 JSONObject jsonObject = (JSONObject) object;
