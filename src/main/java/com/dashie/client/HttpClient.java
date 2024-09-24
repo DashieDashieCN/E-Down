@@ -18,38 +18,47 @@ import java.io.InputStream;
 public class HttpClient {
 
     public static JSONObject get(String address) throws Exception {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet("https://" + address + "/posts.json");
-        // 设置请求头
-        setHeader(httpGet);
-        // 发送并接收请求
-        try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-            HttpEntity entity = response.getEntity();
-            String result = EntityUtils.toString(entity);
-            EntityUtils.consume(entity);
-            return JSON.parseObject(result);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet("https://" + address + "/posts.json");
+            // 设置请求头
+            setHeader(httpGet);
+            // 发送并接收请求
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                HttpEntity entity = response.getEntity();
+                String result = EntityUtils.toString(entity);
+                EntityUtils.consume(entity);
+                return JSON.parseObject(result);
+            }
         }
+    }
+
+    public static JSONObject get(Long sleepMillis, String address, String limit, String tags, String page) throws Exception {
+        if (sleepMillis != null) {
+            Thread.sleep(sleepMillis);
+        }
+        return get(address, limit, tags, page);
     }
 
     public static JSONObject get(String address, String limit, String tags, String page) throws Exception {
         if (limit.isEmpty() && tags.isEmpty() && page.isEmpty()) {
             return get(address);
         }
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        URIBuilder uriBuilder = new URIBuilder("https://" + address + "/posts.json");
-        // 设置请求体
-        if (!limit.trim().isEmpty())    uriBuilder.setParameter("limit", limit);
-        if (!tags.trim().isEmpty())     uriBuilder.setParameter("tags", tags);
-        if (!page.trim().isEmpty())     uriBuilder.setParameter("page", page);
-        HttpGet httpGet = new HttpGet(uriBuilder.build());
-        // 设置请求头
-        setHeader(httpGet);
-        // 发送并接收请求
-        try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-            HttpEntity entity = response.getEntity();
-            String result = EntityUtils.toString(entity);
-            EntityUtils.consume(entity);
-            return JSON.parseObject(result);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            URIBuilder uriBuilder = new URIBuilder("https://" + address + "/posts.json");
+            // 设置请求体
+            if (!limit.trim().isEmpty()) uriBuilder.setParameter("limit", limit);
+            if (!tags.trim().isEmpty()) uriBuilder.setParameter("tags", tags);
+            if (!page.trim().isEmpty()) uriBuilder.setParameter("page", page);
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            // 设置请求头
+            setHeader(httpGet);
+            // 发送并接收请求
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                HttpEntity entity = response.getEntity();
+                String result = EntityUtils.toString(entity);
+                EntityUtils.consume(entity);
+                return JSON.parseObject(result);
+            }
         }
     }
 

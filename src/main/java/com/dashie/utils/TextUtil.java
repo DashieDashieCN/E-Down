@@ -1,18 +1,18 @@
 package com.dashie.utils;
 
 import com.dashie.entity.ConfigProperties;
-import com.dashie.entity.Records;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class TextUtil {
     public static final String RECORDS_FILE_NAME = "records.txt";
+
+    public static final String SPLITTER = " ";
 
     // jar包外
     public static String getRecordsFilePath() {
@@ -28,7 +28,7 @@ public class TextUtil {
 //        return filePath + "/resource/" + RECORDS_FILE_NAME;
 //    }
 
-    public static File checkFile(String path) throws Exception {
+    public static void checkFile(String path) throws Exception {
         System.out.println(" * CHECKING FILE...");
         File file = new File(path);
         if (!file.exists()) {
@@ -40,7 +40,6 @@ public class TextUtil {
         } else {
             System.out.println(" * FILE EXISTS: " + path);
         }
-        return file;
     }
 
     public static String readLine(String path) throws IOException {
@@ -61,7 +60,7 @@ public class TextUtil {
 //        BufferedReader br = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(path))));
 //        String line;
 //        while ((line = br.readLine()) != null) {
-//            String[] arr = line.trim().split("-", 3);
+//            String[] arr = line.trim().split(SPLITTER, 3);
 //            if (arr.length > 1) {
 //                map.put(arr[0], new Records(Long.valueOf(arr[1]), Integer.valueOf(arr[2])));
 //            }
@@ -79,7 +78,7 @@ public class TextUtil {
 //        BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(textUtil.getClass().getResourceAsStream(getRecordsFilePath()))));
         String line;
         while ((line = br.readLine()) != null) {
-            String[] arr = line.trim().split("-", 2);
+            String[] arr = line.trim().split(SPLITTER, 2);
             if (arr.length > 1) {
                 map.put(arr[0], Long.valueOf(arr[1]));
             }
@@ -106,7 +105,7 @@ public class TextUtil {
 //        FileWriter fw = new FileWriter(path, false);
 //        Set<String> keySet = map.keySet();
 //        for (String key : keySet) {
-//            fw.write(key + "-" + map.get(key).toText() + "\n");
+//            fw.write(key + SPLITTER + map.get(key).toText() + "\n");
 //        }
 //        fw.flush();
 //        fw.close();
@@ -117,7 +116,7 @@ public class TextUtil {
         FileWriter fw = new FileWriter(path, false);
         Set<String> keySet = map.keySet();
         for (String key : keySet) {
-            fw.write(key + "-" + map.get(key) + "\n");
+            fw.write(key + SPLITTER + map.get(key) + "\n");
         }
         fw.flush();
         fw.close();
