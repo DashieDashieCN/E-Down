@@ -18,6 +18,8 @@ import static com.dashie.entity.ConfigProperties.*;
 import static com.dashie.utils.ScreenPrintUtil.*;
 
 public class Main {
+    public static final String VERSION = "V0.2.1 alpha";
+
     public static void main(String[] args) throws Exception {
         System.out.println("\n" +
                 "  _____            _     _      _____            _     _      \n" +
@@ -34,7 +36,7 @@ public class Main {
                 "    ██╔══╝╚════╝██║  ██║██║   ██║██║███╗██║██║╚██╗██║\n" +
                 "    ███████╗    ██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║\n" +
                 "    ╚══════╝    ╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝\n" +
-                "                                                 ");
+                "                                                   " + VERSION);
         try {
             // 获取配置文件并检查完整性
             ConfigProperties config = new ConfigProperties();
