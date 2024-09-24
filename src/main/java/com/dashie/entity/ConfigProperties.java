@@ -33,9 +33,9 @@ public class ConfigProperties {
         System.out.println("==============================================");
         // jar包外读取
         File directory = new File("");
-        String filePath = directory.getAbsolutePath();
+        String filePath = directory.getAbsolutePath() + "/conf/config.properties";
         System.out.println(filePath);
-        BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(filePath + "/conf/config.properties")));
+        BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(filePath)));
         // jar包内读取
 //        InputStream inputStream = ClassLoader.getSystemResourceAsStream("config.properties");
         Properties properties = new Properties();
@@ -43,7 +43,7 @@ public class ConfigProperties {
         properties.list(System.out);
         System.out.println("==============================================");
         if (!PropertiesUtil.isNull(properties)) {
-            throw new Exception("config.properties 不完整或必填项为空。");
+            throw new Exception("config.properties 不完整或必填项为空");
         } else {
             this.address = properties.getProperty("address");
             this.limit = properties.getProperty("limit");
@@ -53,12 +53,12 @@ public class ConfigProperties {
             try {
                 this.strategyOfApi = Integer.valueOf(properties.getProperty("strategy.api"));
             } catch (Exception e) {
-                throw new Exception("config.properties strategy.api 参数非法。" + e);
+                throw new Exception("config.properties strategy.api 参数非法", e.getCause());
             }
             try {
                 this.strategyOfDownload = Integer.valueOf(properties.getProperty("strategy.download"));
             } catch (Exception e) {
-                throw new Exception("config.properties strategy.download 参数非法。" + e);
+                throw new Exception("config.properties strategy.download 参数非法", e.getCause());
             }
         }
 

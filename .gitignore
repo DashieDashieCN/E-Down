@@ -1,7 +1,5 @@
 # 项目排除路径
 /out/
 /target/
-.idea/artifacts/
-.idea/inspectionProfiles/
-
-*.xml
+.idea/*
+/.idea/*
