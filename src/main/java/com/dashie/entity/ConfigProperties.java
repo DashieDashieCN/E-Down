@@ -22,6 +22,8 @@ public class ConfigProperties {
     public static final int OUTPUT_AUTO_GENERATE_NO = 0;
     // 自动生成额外输出文件夹-根据完整tags
     public static final int OUTPUT_AUTO_GENERATE_BY_TAGS = -1;
+    // 自动生成额外输出文件夹-根据完整tags
+    public static final int OUTPUT_AUTO_GENERATE_BY_TIME = -2;
     // 下载完成后自动打开输出文件夹-否
     public static final int OUTPUT_AUTO_OPEN_NO = 0;
     // 下载完成后自动打开输出文件夹-是
