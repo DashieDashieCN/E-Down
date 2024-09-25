@@ -65,7 +65,8 @@ public class Main {
         int exitTime = config.getStrategyOfExit();
         if (exitTime > EXIT_MANUAL) {
             while (exitTime > 0) {
-                System.out.println("程序已结束，将在" + config.getStrategyOfExit() + "秒后自动退出");
+                printWithBackgroundColor("程序已结束，将在" + exitTime + "秒后自动退出", COLOR_WHITE,STYLE_UNDERLINE);
+//                System.out.println("程序已结束，将在" + config.getStrategyOfExit() + "秒后自动退出");
                 Thread.sleep(1000);
                 exitTime--;
             }
