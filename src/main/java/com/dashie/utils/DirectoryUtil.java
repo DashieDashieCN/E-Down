@@ -4,7 +4,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import static com.dashie.entity.ConfigProperties.*;
 
@@ -39,6 +42,12 @@ public class DirectoryUtil {
             return dirName;
         } else if (strategy == OUTPUT_AUTO_GENERATE_BY_TAGS) {
             String dirName = path + "/" + tags.replace(" ", SPLITTER);
+            checkDirectory(dirName);
+            return dirName;
+        } else if (strategy == OUTPUT_AUTO_GENERATE_BY_TIME) {
+            Date date = new Date();
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String dirName = path + "/" + format.format(date);
             checkDirectory(dirName);
             return dirName;
         }

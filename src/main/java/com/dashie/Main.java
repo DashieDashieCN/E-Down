@@ -19,7 +19,7 @@ import static com.dashie.entity.ConfigProperties.*;
 import static com.dashie.utils.ScreenPrintUtil.*;
 
 public class Main {
-    public static final String VERSION = "V0.3 beta";
+    public static final String VERSION = "V0.4.0 beta";
 
     public static void main(String[] args) throws Exception {
         printTitle();
@@ -65,8 +65,7 @@ public class Main {
         int exitTime = config.getStrategyOfExit();
         if (exitTime > EXIT_MANUAL) {
             while (exitTime > 0) {
-                printWithBackgroundColor("程序已结束，将在" + exitTime + "秒后自动退出", COLOR_WHITE,STYLE_UNDERLINE);
-//                System.out.println("程序已结束，将在" + config.getStrategyOfExit() + "秒后自动退出");
+                System.out.println("程序已结束，将在" + exitTime + "秒后自动退出");
                 Thread.sleep(1000);
                 exitTime--;
             }
@@ -96,13 +95,13 @@ public class Main {
                 " |_____/ \\__,_|___/_| |_|_|\\___|_____/ \\__,_|___/_| |_|_|\\___|\n" +
                 "                                                              ");
         System.out.println("\n" +
-                "    ███████╗    ██████╗  ██████╗ ██╗    ██╗███╗   ██╗\n" +
-                "    ██╔════╝    ██╔══██╗██╔═══██╗██║    ██║████╗  ██║\n" +
-                "    █████╗█████╗██║  ██║██║   ██║██║ █╗ ██║██╔██╗ ██║\n" +
-                "    ██╔══╝╚════╝██║  ██║██║   ██║██║███╗██║██║╚██╗██║\n" +
-                "    ███████╗    ██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║\n" +
-                "    ╚══════╝    ╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝\n" +
-                "                                                   " + VERSION);
+                "      ███████╗    ██████╗  ██████╗ ██╗    ██╗███╗   ██╗\n" +
+                "      ██╔════╝    ██╔══██╗██╔═══██╗██║    ██║████╗  ██║\n" +
+                "      █████╗█████╗██║  ██║██║   ██║██║ █╗ ██║██╔██╗ ██║\n" +
+                "      ██╔══╝╚════╝██║  ██║██║   ██║██║███╗██║██║╚██╗██║\n" +
+                "      ███████╗    ██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║\n" +
+                "      ╚══════╝    ╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝\n" +
+                "                                                 " + VERSION);
     }
 
     /**
